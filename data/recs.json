@@ -1,0 +1,55 @@
+[
+  {
+    "id": "seed-1",
+    "title": "Slow Horses",
+    "type": "show",
+    "recommender_name": "Jake",
+    "status": "to_watch",
+    "rating": null,
+    "created_at": "2026-09-20T12:00:00Z",
+    "watch_providers": ["Apple TV+"]
+  },
+  {
+    "id": "seed-2",
+    "title": "Past Lives",
+    "type": "movie",
+    "recommender_name": "Sarah",
+    "status": "to_watch",
+    "rating": null,
+    "created_at": "2026-09-18T09:30:00Z",
+    "watch_providers": ["Netflix"]
+  },
+  {
+    "id": "seed-3",
+    "title": "The Bear",
+    "type": "show",
+    "recommender_name": "Priya",
+    "status": "watched",
+    "rating": 5,
+    "created_at": "2026-09-10T20:00:00Z",
+    "watched_at": "2026-09-15T22:00:00Z",
+    "watch_providers": ["Hulu"]
+  },
+  {
+    "id": "seed-4",
+    "title": "Succession",
+    "type": "show",
+    "recommender_name": "Jake",
+    "status": "watched",
+    "rating": 5,
+    "created_at": "2026-08-28T14:00:00Z",
+    "watched_at": "2026-09-05T21:00:00Z",
+    "watch_providers": ["Max"]
+  },
+  {
+    "id": "seed-5",
+    "title": "Everything Everywhere All at Once",
+    "type": "movie",
+    "recommender_name": "Priya",
+    "status": "watched",
+    "rating": 4,
+    "created_at": "2026-09-01T11:00:00Z",
+    "watched_at": "2026-09-12T19:00:00Z",
+    "watch_providers": ["Prime Video"]
+  }
+]

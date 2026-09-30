@@ -1,0 +1,48 @@
+/*
+  Harbor — design tokens for shadcn/ui
+
+  After `npx shadcn@latest init -d`, open app/globals.css and replace the
+  token values inside `:root { ... }` with the block below. Keep the rest
+  of the file (imports, @theme, base layer).
+
+  To change the look later: edit a value here once. Do not hardcode colors
+  in components — use bg-primary, text-muted-foreground, etc.
+*/
+
+:root {
+  --radius: 0.75rem;
+
+  --background: #fdf2f4;
+  --foreground: #111111;
+
+  --card: #ffffff;
+  --card-foreground: #111111;
+
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+
+  --primary: #e11d48;
+  --primary-foreground: #ffffff;
+
+  --secondary: #fff1f2;
+  --secondary-foreground: #e11d48;
+
+  --muted: #fafafa;
+  --muted-foreground: #737373;
+
+  --accent: #fff1f2;
+  --accent-foreground: #e11d48;
+
+  --destructive: #be123c;
+  --destructive-foreground: #ffffff;
+
+  --border: #ededed;
+  --input: #ededed;
+  --ring: #e11d48;
+
+  --chart-1: #e11d48;
+  --chart-2: #15803d;
+  --chart-3: #737373;
+  --chart-4: #be123c;
+  --chart-5: #111111;
+}

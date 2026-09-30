@@ -1,0 +1,26 @@
+[
+  {
+    "source_title": "The Bear",
+    "title": "The Menu",
+    "type": "movie",
+    "reason": "High-pressure kitchens and dark comedy."
+  },
+  {
+    "source_title": "The Bear",
+    "title": "Industry",
+    "type": "show",
+    "reason": "Fast, stressful workplaces and sharp dialogue."
+  },
+  {
+    "source_title": "Succession",
+    "title": "Billions",
+    "type": "show",
+    "reason": "Power games among the ultra-rich."
+  },
+  {
+    "source_title": "Succession",
+    "title": "The Morning Show",
+    "type": "show",
+    "reason": "Backroom politics and ego at the top."
+  }
+]
