@@ -7,6 +7,7 @@ import { getSimilarSeed } from "@/lib/seed";
 import { lookupPosterUrl, lookupTitleCatalog, lookupWatchProviders } from "@/lib/tmdb";
 import type { Rec, RecType } from "@/lib/types";
 
+
 export async function syncRecAction(rec: Rec): Promise<void> {
   if (!hasDatabase()) {
     return;
@@ -37,7 +38,11 @@ export async function fetchWatchProvidersAction(
   title: string,
   type: RecType,
 ): Promise<string[]> {
-  const providers = await lookupWatchProviders(title, type);
+  const providers = await lookupWatchProviders(
+    title,
+    type,
+    process.env.TMDB_API_KEY,
+  );
   return providers;
 }
 
@@ -45,14 +50,14 @@ export async function fetchTitleCatalogAction(
   title: string,
   type: RecType,
 ): Promise<{ poster_url: string | null; watch_providers: string[] }> {
-  return lookupTitleCatalog(title, type);
+  return lookupTitleCatalog(title, type, process.env.TMDB_API_KEY);
 }
 
 export async function fetchPosterAction(
   title: string,
   type: RecType,
 ): Promise<string | null> {
-  return lookupPosterUrl(title, type);
+  return lookupPosterUrl(title, type, process.env.TMDB_API_KEY);
 }
 
 export async function fetchPostersAction(
@@ -60,7 +65,11 @@ export async function fetchPostersAction(
 ): Promise<Record<string, string | null>> {
   const entries = await Promise.all(
     titles.map(async (item) => {
-      const poster = await lookupPosterUrl(item.title, item.type);
+      const poster = await lookupPosterUrl(
+        item.title,
+        item.type,
+        process.env.TMDB_API_KEY,
+      );
       return [item.title.toLowerCase(), poster] as const;
     }),
   );

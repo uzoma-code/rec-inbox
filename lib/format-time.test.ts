@@ -31,10 +31,10 @@ describe("formatTimeAgo", () => {
 });
 
 describe("formatRecMeta", () => {
-  it("joins recommender and time ago", () => {
+  it("joins recommender, told-you copy, and time ago", () => {
     const now = new Date("2026-09-29T12:00:00Z");
     expect(formatRecMeta("Jake", "2026-09-26T12:00:00Z", now)).toBe(
-      "Jake · 3 days ago",
+      "Jake told you to watch this · 3 days ago",
     );
   });
 });

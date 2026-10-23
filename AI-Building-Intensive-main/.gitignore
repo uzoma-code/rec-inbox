@@ -1,0 +1,18 @@
+# Publish only the bootstrap README, license, and student pack.
+# Everything else in this folder stays on your machine.
+
+/*
+!.gitignore
+!README.md
+!LICENSE
+!student/
+!student/**
+
+*.docx
+~$*
+**/~$*
+.DS_Store
+**/.DS_Store
+**/.env
+!**/.env.example
+!student/.env.example

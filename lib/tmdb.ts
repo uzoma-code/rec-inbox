@@ -1,4 +1,14 @@
+import { readFileSync } from "node:fs";
+import { setDefaultResultOrder } from "node:dns";
+import { join } from "node:path";
+import {
+  isTmdbBearerToken,
+  parseEnvFileValue,
+  resolveTmdbApiKey,
+} from "./tmdb-env";
 import type { RecType } from "./types";
+
+setDefaultResultOrder("ipv4first");
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w342";
@@ -19,8 +29,48 @@ type TmdbProvidersResult = {
 };
 
 type TmdbSimilarResult = {
-  results?: Array<{ title?: string; name?: string; media_type?: string }>;
+  results?: Array<{ title?: string; name?: string; poster_path?: string | null }>;
 };
+
+function readTmdbKeyFromDotenv(): string | undefined {
+  if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test") {
+    return undefined;
+  }
+
+  try {
+    const local = readFileSync(join(process.cwd(), ".env.local"), "utf8");
+    const fromLocal = parseEnvFileValue(local, "TMDB_API_KEY");
+    if (fromLocal) {
+      return fromLocal;
+    }
+  } catch {
+    // Optional local override.
+  }
+
+  try {
+    const envFile = readFileSync(join(process.cwd(), ".env"), "utf8");
+    return parseEnvFileValue(envFile, "TMDB_API_KEY");
+  } catch {
+    return undefined;
+  }
+}
+
+function tmdbApiKey(override?: string | null): string | undefined {
+  return resolveTmdbApiKey(override) ?? readTmdbKeyFromDotenv();
+}
+
+async function tmdbGet(pathAndQuery: string, apiKey: string): Promise<Response> {
+  const url = new URL(`${TMDB_BASE}${pathAndQuery}`);
+  const headers: HeadersInit = { Accept: "application/json" };
+
+  if (isTmdbBearerToken(apiKey)) {
+    headers.Authorization = `Bearer ${apiKey}`;
+  } else {
+    url.searchParams.set("api_key", apiKey);
+  }
+
+  return fetch(url, { cache: "no-store", headers });
+}
 
 export function posterUrlFromPath(
   posterPath: string | null | undefined,
@@ -37,8 +87,10 @@ async function searchTitle(
   apiKey: string,
 ): Promise<{ id: number; poster_url: string | null } | null> {
   const searchType = type === "movie" ? "movie" : "tv";
-  const searchUrl = `${TMDB_BASE}/search/${searchType}?api_key=${apiKey}&query=${encodeURIComponent(title)}`;
-  const searchRes = await fetch(searchUrl);
+  const searchRes = await tmdbGet(
+    `/search/${searchType}?query=${encodeURIComponent(title)}`,
+    apiKey,
+  );
   if (!searchRes.ok) {
     return null;
   }
@@ -58,8 +110,9 @@ async function searchTitle(
 export async function lookupTitleCatalog(
   title: string,
   type: RecType,
+  apiKeyOverride?: string | null,
 ): Promise<{ poster_url: string | null; watch_providers: string[] }> {
-  const apiKey = process.env.TMDB_API_KEY;
+  const apiKey = tmdbApiKey(apiKeyOverride);
   if (!apiKey) {
     return { poster_url: null, watch_providers: [] };
   }
@@ -71,8 +124,10 @@ export async function lookupTitleCatalog(
     }
 
     const searchType = type === "movie" ? "movie" : "tv";
-    const providersUrl = `${TMDB_BASE}/${searchType}/${match.id}/watch/providers?api_key=${apiKey}`;
-    const providersRes = await fetch(providersUrl);
+    const providersRes = await tmdbGet(
+      `/${searchType}/${match.id}/watch/providers`,
+      apiKey,
+    );
     if (!providersRes.ok) {
       return { poster_url: match.poster_url, watch_providers: [] };
     }
@@ -92,8 +147,9 @@ export async function lookupTitleCatalog(
 export async function lookupPosterUrl(
   title: string,
   type: RecType,
+  apiKeyOverride?: string | null,
 ): Promise<string | null> {
-  const apiKey = process.env.TMDB_API_KEY;
+  const apiKey = tmdbApiKey(apiKeyOverride);
   if (!apiKey) {
     return null;
   }
@@ -109,16 +165,18 @@ export async function lookupPosterUrl(
 export async function lookupWatchProviders(
   title: string,
   type: RecType,
+  apiKeyOverride?: string | null,
 ): Promise<string[]> {
-  const catalog = await lookupTitleCatalog(title, type);
+  const catalog = await lookupTitleCatalog(title, type, apiKeyOverride);
   return catalog.watch_providers;
 }
 
 export async function lookupSimilarTitles(
   title: string,
   type: RecType,
+  apiKeyOverride?: string | null,
 ): Promise<Array<{ title: string; type: RecType }>> {
-  const apiKey = process.env.TMDB_API_KEY;
+  const apiKey = tmdbApiKey(apiKeyOverride);
   if (!apiKey) {
     return [];
   }
@@ -130,8 +188,7 @@ export async function lookupSimilarTitles(
     }
 
     const searchType = type === "movie" ? "movie" : "tv";
-    const similarUrl = `${TMDB_BASE}/${searchType}/${match.id}/similar?api_key=${apiKey}`;
-    const similarRes = await fetch(similarUrl);
+    const similarRes = await tmdbGet(`/${searchType}/${match.id}/similar`, apiKey);
     if (!similarRes.ok) {
       return [];
     }
@@ -140,8 +197,7 @@ export async function lookupSimilarTitles(
     return (similarData.results ?? [])
       .slice(0, 4)
       .map((item) => {
-        const recType: RecType =
-          item.media_type === "movie" || searchType === "movie" ? "movie" : "show";
+        const recType: RecType = searchType === "movie" ? "movie" : "show";
         return {
           title: item.title ?? item.name ?? "",
           type: recType,

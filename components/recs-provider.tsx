@@ -77,7 +77,7 @@ export function RecsProvider({
     const catalog = await fetchTitleCatalogAction(rec.title, rec.type);
     return {
       ...rec,
-      poster_url: rec.poster_url ?? catalog.poster_url,
+      poster_url: rec.poster_url || catalog.poster_url,
       watch_providers:
         rec.watch_providers && rec.watch_providers.length > 0
           ? rec.watch_providers

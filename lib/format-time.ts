@@ -46,5 +46,5 @@ export function formatRecMeta(
   createdAt: string,
   now = new Date(),
 ): string {
-  return `${recommenderName} · ${formatTimeAgo(createdAt, now)}`;
+  return `${recommenderName} told you to watch this · ${formatTimeAgo(createdAt, now)}`;
 }
